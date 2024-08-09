@@ -1,0 +1,11 @@
+# https://opensource.com/article/20/7/systemd-timers
+[Unit]
+Description=Factorio Backup Timer
+Requires=factorio_backup.service
+
+[Timer]
+Unit=myMonitor.service
+OnCalendar=*-*-* *:00:00
+
+[Install]
+WantedBy=timers.target
