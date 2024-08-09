@@ -1,16 +1,18 @@
 [tool.poetry]
-    name        = "factorio-iac"
-    version     = "0.1.0"
-    description = "Factorio Infrastructure as Code"
-    license     = "MIT"
-    readme      = "README.md"
-    authors     = ["Nathan Vaughn <nath@nvaughn.email>"]
-    homepage    = "https://github.com/https://github.com/NathanVaughn/factorio-iac"
-    repository  = "https://github.com/https://github.com/NathanVaughn/factorio-iac.git"
+    name         = "factorio-iac"
+    version      = "0.1.0"
+    description  = "Factorio Infrastructure as Code"
+    license      = "MIT"
+    readme       = "README.md"
+    authors      = ["Nathan Vaughn <nath@nvaughn.email>"]
+    homepage     = "https://github.com/https://github.com/NathanVaughn/factorio-iac"
+    repository   = "https://github.com/https://github.com/NathanVaughn/factorio-iac.git"
     package-mode = false
 
 [tool.poetry.dependencies]
-    python = "^3.12"
+    python        = "^3.12"
+    jinja2        = "^3.1.4"
+    python-dotenv = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
     pre-commit = "3.8.0"
