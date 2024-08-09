@@ -8,15 +8,15 @@ Requires=docker.service
 TimeoutStartSec=0
 Restart=always
 # -= tolerates failure
-ExecStartPre=-/usr/bin/docker exec %n stop
-ExecStartPre=-/usr/bin/docker rm %n
+# %n is the name of the service
+ExecStartPre=-/usr/bin/docker container rm %n
 ExecStartPre=/usr/bin/docker pull cr.nathanv.app/{{ FACTORIO_IMAGE }}
 ExecStart=/usr/bin/docker run --rm --name %n \
 -v /opt/factorio:/factorio/server/ \
 -p 34197:34197/udp \
 -p 27015:27015/tcp \
 cr.nathanv.app/{{ FACTORIO_IMAGE }}
-ExecStop=/usr/bin/docker exec %n stop
+ExecStop=/usr/bin/docker container stop %n
 
 [Install]
 WantedBy=default.target
