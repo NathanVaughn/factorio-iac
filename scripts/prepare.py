@@ -7,7 +7,8 @@ import urllib.request
 
 import dotenv
 import jinja2
-from common import FILES_DIR, GENERATED_FILES_DIR, ROOT_DIR, TEMPLATES_DIR
+
+from scripts.common import FILES_DIR, GENERATED_FILES_DIR, ROOT_DIR, TEMPLATES_DIR
 
 CONFIG = dotenv.dotenv_values(ROOT_DIR.joinpath(".env"))
 

@@ -4,9 +4,10 @@ This script is meant to be executed by pyinfra to configure the server.
 
 import os
 
-import prepare
-from common import FILES_DIR, GENERATED_FILES_DIR
 from pyinfra.operations import apt, files, server, systemd
+
+from scripts import prepare
+from scripts.common import FILES_DIR, GENERATED_FILES_DIR
 
 SYSTEMD_DIR = "/etc/systemd/system/"
 

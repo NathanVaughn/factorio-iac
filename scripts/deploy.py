@@ -5,10 +5,11 @@ This script is meant to deploy the VM in the cloud.
 import os
 import urllib.request
 
-import prepare
 import pulumi_aws as aws
 import pulumi_cloudflare as cloudflare
-from common import CLOUDFLARE_ACCOUNT_ID, GENERATED_FILES_DIR
+
+from scripts import prepare
+from scripts.common import CLOUDFLARE_ACCOUNT_ID, GENERATED_FILES_DIR
 
 prepare.main()
 
