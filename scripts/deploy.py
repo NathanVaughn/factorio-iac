@@ -8,7 +8,7 @@ import pulumi_aws as aws
 import pulumi_cloudflare as cloudflare
 
 from scripts import prepare
-from scripts.common import CLOUDFLARE_ACCOUNT_ID, DISK_PATH, GENERATED_FILES_DIR
+from scripts.common import CLOUDFLARE_ACCOUNT_ID, GENERATED_FILES_DIR
 
 prepare.main()
 
@@ -53,7 +53,7 @@ factorio_disk_attachment = aws.lightsail.Disk_attachment(
     "factorio_disk_attachment",
     disk_name=factorio_disk.name,
     instance_name=factorio_vps.name,
-    disk_path=DISK_PATH,
+    disk_path="/dev/xvdf",
 )
 
 factorio_vps_public_ports = aws.lightsail.InstancePublicPorts(
