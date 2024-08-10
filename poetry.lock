@@ -468,7 +468,10 @@ files = [
 
 [package.dependencies]
 cffi = {version = ">=1.12.2", markers = "platform_python_implementation == \"CPython\" and sys_platform == \"win32\""}
-greenlet = {version = ">=3.0rc3", markers = "platform_python_implementation == \"CPython\" and python_version >= \"3.11\""}
+greenlet = [
+    {version = ">=2.0.0", markers = "platform_python_implementation == \"CPython\" and python_version < \"3.11\""},
+    {version = ">=3.0rc3", markers = "platform_python_implementation == \"CPython\" and python_version >= \"3.11\""},
+]
 "zope.event" = "*"
 "zope.interface" = "*"
 
@@ -878,6 +881,7 @@ files = [
 parver = ">=0.2.1"
 pulumi = ">=3.0.0,<4.0.0"
 semver = ">=2.8.1"
+typing-extensions = {version = ">=4.11", markers = "python_version < \"3.11\""}
 
 [[package]]
 name = "pulumi-cloudflare"
@@ -929,6 +933,7 @@ python-dateutil = ">2,<3"
 pywinrm = "*"
 setuptools = "*"
 typeguard = "*"
+typing-extensions = {version = "*", markers = "python_version < \"3.11\""}
 
 [package.extras]
 dev = ["black (==24.4.2)", "coverage (==7.5.1)", "flake8 (==7.0.0)", "flake8-black (==0.3.6)", "flake8-isort (==6.1.1)", "flake8-spellcheck (==0.12.1)", "ipdb", "ipdbplugin", "ipython", "isort (==5.13.2)", "mypy", "myst-parser (==2.0.0)", "pyinfra-guzzle-sphinx-theme (==0.16)", "pytest (==8.2.1)", "pytest-cov (==5.0.0)", "redbaron", "sphinx (==6.2.1)", "twine", "types-PyYAML", "types-cryptography", "types-paramiko", "types-python-dateutil", "types-setuptools", "wheel"]
@@ -1352,5 +1357,5 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.12"
-content-hash = "2b60efa145d39088996c0d9a06594fcc7b097c591129faab4bb5eb5c90b61095"
+python-versions = "^3.10"
+content-hash = "2b5b58e859af95320de75e8a9a27b472e75a2a63e7ed2a0b2b0a8444f9655724"

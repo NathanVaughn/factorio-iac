@@ -29,7 +29,7 @@ ssh_key_pair = aws.lightsail.KeyPair(
 factorio_disk = aws.lightsail.Disk(
     "factorio_disk",
     availability_zone=availability_zone,
-    size_in_gb=5,
+    size_in_gb=8,  # minimum is 8gb
     name="factorio_disk",
 )
 
@@ -64,11 +64,21 @@ factorio_vps_public_ports = aws.lightsail.InstancePublicPorts(
             "from_port": 34197,
             "to_port": 34197,
             "protocol": "udp",
+            "cidrs": ["0.0.0.0/0"],
+            "ipv6_cidrs": ["::/0"],
         },
         {
             "from_port": 27015,
             "to_port": 27015,
             "protocol": "tcp",
+            "cidrs": ["0.0.0.0/0"],
+            "ipv6_cidrs": ["::/0"],
+        },
+        {
+            "from_port": 22,
+            "to_port": 22,
+            "protocol": "tcp",
+            "cidr_list_aliases": ["lightsail-connect"],
         },
     ],
 )
@@ -84,7 +94,7 @@ cloudflare.Record(
     "nathanv.app-record-factorio",
     name="factorio.nathanv.app",
     type="A",
-    value=factorio_vps.public_ip_address,
+    content=factorio_vps.public_ip_address,
     proxied=True,
     zone_id=zone.id,
 )
