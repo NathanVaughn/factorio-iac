@@ -2,16 +2,40 @@
 This script is meant to be executed by pyinfra to configure the server.
 """
 
-import os
+import pathlib
 
+from pyinfra.context import host
+from pyinfra.facts.server import Command, LinuxDistribution
 from pyinfra.operations import apt, files, server, systemd
 
 from scripts import prepare
-from scripts.common import FILES_DIR, GENERATED_FILES_DIR
+from scripts.common import DISK_PATH, FILES_DIR, GENERATED_FILES_DIR
 
-SYSTEMD_DIR = "/etc/systemd/system/"
+SYSTEMD_DIR = pathlib.Path("/etc/systemd/system/")
 
 prepare.main()
+
+# ==============================================
+# Format and attach disk
+# https://docs.aws.amazon.com/lightsail/latest/userguide/create-and-attach-additional-block-storage-disks-linux-unix.html
+# ==============================================
+
+already_formatted = "filesystem" in host.get_fact(Command, f"file -s {DISK_PATH}")
+if not already_formatted:
+    server.shell(name="Format disk", commands=[f"mkfs -t xfs {DISK_PATH}"])
+
+files.directory(
+    name="Create directory for Factorio data",
+    path="/factorio/",
+)
+
+server.mount(name="Mount the disk", path="/factorio/", mounted=True, device=DISK_PATH)
+
+files.line(
+    name="Add entry to fstab",
+    path="/etc/fstab",
+    line="/dev/nvme1n1/ /factorio/ xfs defaults,nofail 0 2",
+)
 
 # ==============================================
 # Install Docker
@@ -39,7 +63,7 @@ files.directory(
 # Download the Docker GPG key
 files.download(
     name="Download Docker GPG key",
-    url="https://download.docker.com/linux/ubuntu/gpg",
+    src="https://download.docker.com/linux/ubuntu/gpg",
     dest="/etc/apt/keyrings/docker.asc",
     mode="444",
     user="root",
@@ -47,19 +71,13 @@ files.download(
 )
 
 # Add the Docker repository to sources.list
-dpkg_print_architecture = server.shell(
-    name="Run dpkg --print-architecture",
-    commands=["dpkg --print-architecture"],
-)
-ubuntu_codename = server.shell(
-    name="Get Ubuntu codename",
-    commands=["cat /etc/os-release | grep UBUNTU_CODENAME | cut -d = -f 2"],
-)
+dpkg_print_architecture = host.get_fact(Command, "dpkg --print-architecture")
+codename = host.get_fact(LinuxDistribution)["release_meta"]["CODENAME"]
 # fmt: off
 apt.repo(
-    name="Add Docker repository to sources.list",
+    name="Add Docker repository to sources.list.d",
     filename="docker",
-    url=f"deb [arch={dpkg_print_architecture.stdout} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {ubuntu_codename.stdout} stable",
+    src=f"deb [arch={dpkg_print_architecture} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {codename} stable",
 )
 # fmt: on
 
@@ -79,7 +97,7 @@ apt.packages(
 # ==============================================
 
 server.user(
-    # name="Create the Factorio user",
+    name="Create the Factorio user",
     user="factorio",
     uid=845,
     ensure_home=False,
@@ -88,8 +106,8 @@ server.user(
 
 files.put(
     name="Copy Factorio server config",
-    src=os.path.join(GENERATED_FILES_DIR, "server-settings.json"),
-    dest="/factorio/data/config/server-settings.json",
+    src=GENERATED_FILES_DIR.joinpath("server-settings.json"),
+    dest="/factorio/server/config/server-settings.json",
     user="factorio",
     create_remote_dir=True,
 )
@@ -101,25 +119,25 @@ files.put(
 # copy files
 files.put(
     name="Copy Factorio server service file",
-    src=os.path.join(GENERATED_FILES_DIR, "factorio_server.service"),
-    dest=os.path.join(SYSTEMD_DIR, "factorio_server.service"),
+    src=GENERATED_FILES_DIR.joinpath("factorio_server.service"),
+    dest=SYSTEMD_DIR.joinpath("factorio_server.service"),
 )
 
 files.put(
     name="Copy Factorio backup service file",
-    src=os.path.join(FILES_DIR, "factorio_backup.service"),
-    dest=os.path.join(SYSTEMD_DIR, "factorio_backup.service"),
+    src=FILES_DIR.joinpath("factorio_backup.service"),
+    dest=SYSTEMD_DIR.joinpath("factorio_backup.service"),
 )
 
 files.put(
     name="Copy Factorio backup timer file",
-    src=os.path.join(FILES_DIR, "factorio_backup.timer"),
-    dest=os.path.join(SYSTEMD_DIR, "factorio_backup.timer"),
+    src=FILES_DIR.joinpath("factorio_backup.timer"),
+    dest=SYSTEMD_DIR.joinpath("factorio_backup.timer"),
 )
 
 files.put(
     name="Copy Factorio backup environment file",
-    src=os.path.join(GENERATED_FILES_DIR, "factorio_backup.env"),
+    src=GENERATED_FILES_DIR.joinpath("factorio_backup.env"),
     dest="/factorio/factorio_backup.env",
 )
 

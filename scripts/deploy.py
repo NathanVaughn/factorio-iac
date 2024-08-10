@@ -2,18 +2,19 @@
 This script is meant to deploy the VM in the cloud.
 """
 
-import os
 import urllib.request
 
 import pulumi_aws as aws
 import pulumi_cloudflare as cloudflare
 
 from scripts import prepare
-from scripts.common import CLOUDFLARE_ACCOUNT_ID, GENERATED_FILES_DIR
+from scripts.common import CLOUDFLARE_ACCOUNT_ID, DISK_PATH, GENERATED_FILES_DIR
 
 prepare.main()
 
 availability_zone = "us-east-2a"  # Ohio
+blueprint_id = "ubuntu_22_04"
+bundle_id = "micro_3_0"  # $7/month, 1GB, 2 vCPUs, 40GB SSD
 
 # donwload public key
 with urllib.request.urlopen(
@@ -26,32 +27,50 @@ ssh_key_pair = aws.lightsail.KeyPair(
 )
 
 factorio_disk = aws.lightsail.Disk(
-    "factorio_lightsail_disk",
+    "factorio_disk",
     availability_zone=availability_zone,
     size_in_gb=5,
     name="factorio_disk",
 )
 
 # read kickstart file
-with open(os.path.join(GENERATED_FILES_DIR, "kickstart.sh"), "r") as fp:
+with open(GENERATED_FILES_DIR.joinpath("kickstart.sh"), "r") as fp:
     kickstart = fp.read()
 
 
 factorio_vps = aws.lightsail.Instance(
-    "factorio_lightsail_vps",
+    "factorio_vps",
     name="factorio_server",
     availability_zone=availability_zone,
-    blueprint_id="ubuntu_22_04",
-    bundle_id="micro_3_0",  # $7/month, 1GB, 2 vCPUs, 40GB SSD
+    blueprint_id=blueprint_id,
+    bundle_id=bundle_id,
     key_pair_name=ssh_key_pair.name,
     user_data=kickstart,
 )
 
+# https://docs.aws.amazon.com/lightsail/latest/userguide/create-and-attach-additional-block-storage-disks-linux-unix.html
 factorio_disk_attachment = aws.lightsail.Disk_attachment(
     "factorio_disk_attachment",
     disk_name=factorio_disk.name,
     instance_name=factorio_vps.name,
-    disk_path="/factorio/",
+    disk_path=DISK_PATH,
+)
+
+factorio_vps_public_ports = aws.lightsail.InstancePublicPorts(
+    "factorio_vps_public_ports",
+    instance_name=factorio_vps.name,
+    port_infos=[
+        {
+            "from_port": 34197,
+            "to_port": 34197,
+            "protocol": "UDP",
+        },
+        {
+            "from_port": 27015,
+            "to_port": 27015,
+            "protocol": "TCP",
+        },
+    ],
 )
 
 # add cloudflare record
