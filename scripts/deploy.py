@@ -63,12 +63,12 @@ factorio_vps_public_ports = aws.lightsail.InstancePublicPorts(
         {
             "from_port": 34197,
             "to_port": 34197,
-            "protocol": "UDP",
+            "protocol": "udp",
         },
         {
             "from_port": 27015,
             "to_port": 27015,
-            "protocol": "TCP",
+            "protocol": "tcp",
         },
     ],
 )
