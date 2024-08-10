@@ -1,26 +1,26 @@
+"""
+This script is meant to generate some files before the server is configured by pyinfra.
+"""
+
 import json
-import pathlib
 import urllib.request
 
 import dotenv
 import jinja2
-
-ROOT_DIR = pathlib.Path(__file__).parent
-TEMPLATES_DIR = ROOT_DIR.joinpath("templates")
-FILES_DIR = ROOT_DIR.joinpath("files")
-GENERATED_FILES_DIR = FILES_DIR.joinpath("generated")
+from common import FILES_DIR, GENERATED_FILES_DIR, ROOT_DIR, TEMPLATES_DIR
 
 CONFIG = dotenv.dotenv_values(ROOT_DIR.joinpath(".env"))
 
-FACTORIO_SERVER_SETTINGS_TEMPLATE = "https://raw.githubusercontent.com/wube/factorio-data/master/server-settings.example.json"
 
-
-def main():
+def main() -> None:
     # create directories
     GENERATED_FILES_DIR.mkdir(parents=True, exist_ok=True)
 
     # create server settings
-    with urllib.request.urlopen(FACTORIO_SERVER_SETTINGS_TEMPLATE) as response:
+    print("Downloading Factorio server settings template")
+    with urllib.request.urlopen(
+        "https://raw.githubusercontent.com/wube/factorio-data/master/server-settings.example.json"
+    ) as response:
         data = json.loads(response.read().decode())
 
     # settings we care about
@@ -34,6 +34,7 @@ def main():
 
     # write to file
     # needs to end up in /factorio/server/config/server-settings.json
+    print("Writing Factorio server settings")
     with open(GENERATED_FILES_DIR.joinpath("server-settings.json"), "w") as fp:
         fp.write(json.dumps(data, indent=4))
 
@@ -46,6 +47,8 @@ def main():
         # read template
         with open(template_file) as fp:
             template = jinja2.Template(fp.read())
+
+        print(f"Writing {template_file.stem}")
 
         # write to file
         new_filename = GENERATED_FILES_DIR.joinpath(

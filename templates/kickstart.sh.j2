@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# this is to make the script change on a new version
+# {{ FACTORIO_IMAGE }}
+
+# install poetry
+apt-get update -y
+apt-get install -y git python3 python3-pip pipx
+pipx ensurepath --global
+pipx install poetry
+
+# download the project
+mkdir -p /kickstart/
+cd /kickstart/
+git clone https://github.com/NathanVaughn/factorio-iac
+cd factorio-iac
+
+# load environment variables to .env file
+cat > .env << EOL
+FACTORIO_SERVER_PASSWORD={{ FACTORIO_SERVER_PASSWORD }}
+B2_APPLICATION_KEY={{ B2_APPLICATION_KEY }}
+B2_APPLICATION_KEY_ID={{ B2_APPLICATION_KEY_ID }}
+EOL
+
+# run the deploy script
+poetry install
+poetry run pyinfra @local scripts/deploy.py
