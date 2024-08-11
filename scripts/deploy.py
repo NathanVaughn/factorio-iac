@@ -95,6 +95,6 @@ cloudflare.Record(
     name="factorio.nathanv.app",
     type="A",
     content=factorio_vps.public_ip_address,
-    proxied=True,
+    proxied=False,
     zone_id=zone.id,
 )
