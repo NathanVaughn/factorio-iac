@@ -122,7 +122,7 @@ files.put(
 files.put(
     name="Copy Factorio server service file",
     src=str(GENERATED_FILES_DIR.joinpath("factorio_server.service")),
-    dest=SYSTEMD_DIR.joinpath("factorio_server.service"),
+    dest=str(SYSTEMD_DIR.joinpath("factorio_server.service")),
 )
 
 files.put(
