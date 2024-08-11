@@ -106,7 +106,7 @@ server.user(
 
 files.put(
     name="Copy Factorio server config",
-    src=GENERATED_FILES_DIR.joinpath("server-settings.json"),
+    src=str(GENERATED_FILES_DIR.joinpath("server-settings.json")),
     dest="/factorio/server/config/server-settings.json",
     user="factorio",
     create_remote_dir=True,
@@ -119,25 +119,25 @@ files.put(
 # copy files
 files.put(
     name="Copy Factorio server service file",
-    src=GENERATED_FILES_DIR.joinpath("factorio_server.service"),
+    src=str(GENERATED_FILES_DIR.joinpath("factorio_server.service")),
     dest=SYSTEMD_DIR.joinpath("factorio_server.service"),
 )
 
 files.put(
     name="Copy Factorio backup service file",
-    src=FILES_DIR.joinpath("factorio_backup.service"),
-    dest=SYSTEMD_DIR.joinpath("factorio_backup.service"),
+    src=str(FILES_DIR.joinpath("factorio_backup.service")),
+    dest=str(SYSTEMD_DIR.joinpath("factorio_backup.service")),
 )
 
 files.put(
     name="Copy Factorio backup timer file",
-    src=FILES_DIR.joinpath("factorio_backup.timer"),
-    dest=SYSTEMD_DIR.joinpath("factorio_backup.timer"),
+    src=str(FILES_DIR.joinpath("factorio_backup.timer")),
+    dest=str(SYSTEMD_DIR.joinpath("factorio_backup.timer")),
 )
 
 files.put(
     name="Copy Factorio backup environment file",
-    src=GENERATED_FILES_DIR.joinpath("factorio_backup.env"),
+    src=str(GENERATED_FILES_DIR.joinpath("factorio_backup.env")),
     dest="/factorio/factorio_backup.env",
 )
 
