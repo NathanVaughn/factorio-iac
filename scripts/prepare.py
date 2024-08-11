@@ -3,6 +3,7 @@ This script is meant to generate some files before the server is configured by p
 """
 
 import json
+import subprocess
 import urllib.request
 
 import dotenv
@@ -42,6 +43,10 @@ def main() -> None:
     # get docker container image
     with open(FILES_DIR.joinpath("Dockerfile"), "r") as fp:
         CONFIG["FACTORIO_IMAGE"] = fp.readline().strip().split("FROM ")[1]
+
+    CONFIG["GIT_HASH"] = (
+        subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
+    )
 
     # template files
     for template_file in TEMPLATES_DIR.glob("*.j2"):

@@ -155,8 +155,12 @@ systemd.service(
     name="Start Factorio backup service",
     service="factorio_backup.service",
     enabled=True,
+    running=False,
 )
 
 systemd.service(
-    name="Start Factorio backup timer", service="factorio_backup.timer", enabled=True
+    name="Start Factorio backup timer",
+    service="factorio_backup.timer",
+    enabled=True,
+    running=False,
 )
