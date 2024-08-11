@@ -20,21 +20,23 @@ prepare.main()
 # https://docs.aws.amazon.com/lightsail/latest/userguide/create-and-attach-additional-block-storage-disks-linux-unix.html
 # ==============================================
 
+fs = "xfs"
 already_formatted = "filesystem" in host.get_fact(Command, f"file -s {DISK_PATH}")
 if not already_formatted:
-    server.shell(name="Format disk", commands=[f"mkfs -t xfs {DISK_PATH}"])
+    server.shell(name="Format disk", commands=[f"mkfs -t {fs} {DISK_PATH}"])
 
 files.directory(
     name="Create directory for Factorio data",
     path="/factorio/",
 )
 
-server.mount(name="Mount the disk", path="/factorio/", mounted=True, device=DISK_PATH)
+# no trailing slash
+server.mount(name="Mount the disk", path="/factorio", mounted=True, device=DISK_PATH)
 
 files.line(
     name="Add entry to fstab",
     path="/etc/fstab",
-    line="/dev/nvme1n1/ /factorio/ xfs defaults,nofail 0 2",
+    line=f"/dev/nvme1n1/ /factorio {fs} defaults,nofail 0 2",
 )
 
 # ==============================================
