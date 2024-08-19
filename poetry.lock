@@ -868,13 +868,13 @@ six = ">=1.12,<2.0"
 
 [[package]]
 name = "pulumi-aws"
-version = "6.48.0"
+version = "6.49.1"
 description = "A Pulumi package for creating and managing Amazon Web Services (AWS) cloud resources."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pulumi_aws-6.48.0-py3-none-any.whl", hash = "sha256:0e978190db8f3bb4152e63c1e7d818cb90b7011850fb3c97b521188ae6197785"},
-    {file = "pulumi_aws-6.48.0.tar.gz", hash = "sha256:e0886ef29ee51a1f1072731c24c200746ddb4fcf8c6b8c30fd99499f7e16e890"},
+    {file = "pulumi_aws-6.49.1-py3-none-any.whl", hash = "sha256:324d36a1144ca3290c0e8320f65c4d49ce5341c8610984a227e66ae0920d097d"},
+    {file = "pulumi_aws-6.49.1.tar.gz", hash = "sha256:64a1b585fcf9d0770af2462d214aef983f78a0f18d76078bd1e641beadab38e6"},
 ]
 
 [package.dependencies]
@@ -912,13 +912,13 @@ files = [
 
 [[package]]
 name = "pyinfra"
-version = "3.0.2"
+version = "3.1"
 description = "pyinfra automates/provisions/manages/deploys infrastructure."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pyinfra-3.0.2-py2.py3-none-any.whl", hash = "sha256:470cf1aa15c1d45d7540d93d3995d3c32c4bd9699589e797e426afc91d87590d"},
-    {file = "pyinfra-3.0.2.tar.gz", hash = "sha256:c08cbc3c11267f7c6733f9dc6bc09328024d2f847d311f257392ac1797422f8d"},
+    {file = "pyinfra-3.1-py2.py3-none-any.whl", hash = "sha256:d3f52d61c9d9bea23175af250299ef60c2d6ebad86f771e3b546dcd96e0dd060"},
+    {file = "pyinfra-3.1.tar.gz", hash = "sha256:96fca7c54201ffe00e452b165662423f27cd2a3ae6c9f0272fb04c61c078dc06"},
 ]
 
 [package.dependencies]
@@ -1358,4 +1358,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2b5b58e859af95320de75e8a9a27b472e75a2a63e7ed2a0b2b0a8444f9655724"
+content-hash = "454d00698d4f68674b07b68611c2cd496c1cb611f4ad4aceb8374cb09c067eef"
