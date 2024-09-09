@@ -868,13 +868,13 @@ six = ">=1.12,<2.0"
 
 [[package]]
 name = "pulumi-aws"
-version = "6.50.1"
+version = "6.51.0"
 description = "A Pulumi package for creating and managing Amazon Web Services (AWS) cloud resources."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pulumi_aws-6.50.1-py3-none-any.whl", hash = "sha256:8c1266f39008c4faabf812fe317cc678646961b6a4a4b9aeb153a26baca66e66"},
-    {file = "pulumi_aws-6.50.1.tar.gz", hash = "sha256:3d200f5cea558a9091d209a08b07fcd3b4e4ef37dbcc8efbd5366c08cbaba860"},
+    {file = "pulumi_aws-6.51.0-py3-none-any.whl", hash = "sha256:af00734c770f86b9b0b763b27386cbad71c234051313010d78ca40b6a5309884"},
+    {file = "pulumi_aws-6.51.0.tar.gz", hash = "sha256:e4ef28c63de6bf625c370e96dac30537203bc25f9425ad6efd578f3ce00f4efc"},
 ]
 
 [package.dependencies]
@@ -1358,4 +1358,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "384ada8e707fbcc0ebc433ce2fc43d7ce0db94bd8635b83c993531ce41d44f50"
+content-hash = "28c01485e8807c078bea5a6dbfccd4c2f91bca9834d26040ab73107a35021bbe"

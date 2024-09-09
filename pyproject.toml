@@ -15,7 +15,7 @@
     jinja2            = "^3.1.4"
     python-dotenv     = "^1.0.1"
     pyinfra           = "^3.1"
-    pulumi-aws        = "^6.50.1"
+    pulumi-aws        = "^6.51.0"
     pulumi-cloudflare = "^5.37.1"
 
 [tool.poetry.group.dev.dependencies]
