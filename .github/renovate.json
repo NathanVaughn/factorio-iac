@@ -1,4 +1,10 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["github>nathanvaughn/renovate-config"]
+    "extends": ["github>nathanvaughn/renovate-config"],
+    "packageRules": [
+        {
+            "matchCategories": ["docker"],
+            "extends": ["schedule:daily"]
+        }
+    ]
 }
