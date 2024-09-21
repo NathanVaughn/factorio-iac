@@ -2,7 +2,7 @@ name: factorio-iac
 runtime:
   name: python
   options:
-    toolchain: poetry
+    toolchain: pip
     virtualenv: .venv
     # typechecker: pyright
     # handle this ourselves with pre-commit

@@ -1,0 +1,21 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    permissions:
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python_version: ["3.12"]
+
+    uses: NathanVaughn/reusable-actions/.github/workflows/python-test-uv.yml@main
+    with:
+      python_version: ${{ matrix.python_version }}
+      pytest: false
