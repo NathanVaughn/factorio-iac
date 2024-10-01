@@ -10,7 +10,7 @@
         "jinja2==3.1.4",
         "python-dotenv==1.0.1",
         "pyinfra==3.1.1",
-        "pulumi==3.134.1",
+        "pulumi==3.135.0",
         "pulumi-aws==6.54.1",
         "pulumi-cloudflare==5.39.1",
         "pip>=24.2",                 # needed for pulumi compatibility

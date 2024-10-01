@@ -247,7 +247,7 @@ dev = [
 requires-dist = [
     { name = "jinja2", specifier = "==3.1.4" },
     { name = "pip", specifier = ">=24.2" },
-    { name = "pulumi", specifier = "==3.134.1" },
+    { name = "pulumi", specifier = "==3.135.0" },
     { name = "pulumi-aws", specifier = "==6.54.1" },
     { name = "pulumi-cloudflare", specifier = "==5.39.1" },
     { name = "pyinfra", specifier = "==3.1.1" },
@@ -498,7 +498,7 @@ wheels = [
 
 [[package]]
 name = "pulumi"
-version = "3.134.1"
+version = "3.135.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "debugpy" },
@@ -510,7 +510,7 @@ dependencies = [
     { name = "six" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d2/06/d6705ee9d47c42acb8c7650f4f055011cf95771bf641feeb1602e6d79845/pulumi-3.134.1-py3-none-any.whl", hash = "sha256:74ac0d67454256cea6b2cd338ba64cf3067265299dd5212f740638bb7ecdd2b0", size = 273688 },
+    { url = "https://files.pythonhosted.org/packages/23/f8/b1c68d0ea89816ef6670926220d6ab993aff4d1a9fabc7aede4ce822a289/pulumi-3.135.0-py3-none-any.whl", hash = "sha256:fadda283509e360afac92f8b569b1f14b15667984ad966a2a66c6595228f9042", size = 273688 },
 ]
 
 [[package]]
