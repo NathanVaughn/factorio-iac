@@ -10,11 +10,8 @@
 # {{ FACTORIO_IMAGE }}
 # {{ GIT_HASH }}
 
-# install poetry
-apt-get update -y
-apt-get install -y git python3 python3-pip pipx
-pipx ensurepath
-pipx install poetry
+# install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # download the project
 mkdir -p /kickstart/
@@ -34,5 +31,5 @@ B2_APPLICATION_KEY_ID={{ B2_APPLICATION_KEY_ID }}
 EOL
 
 # run the deploy script
-/root/.local/bin/poetry install
-/root/.local/bin/poetry run pyinfra @local scripts/configure.py -y
+/root/.cargo/bin/uv sync
+/root/.cargo/bin/uv run pyinfra @local scripts/configure.py -y
