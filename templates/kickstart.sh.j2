@@ -11,7 +11,7 @@
 # {{ GIT_HASH }}
 
 # install uv
-curl -LsSf https://astral.sh/uv/install.sh | sh
+sudo snap install astral-uv --classic
 
 # download the project
 mkdir -p /kickstart/
@@ -31,5 +31,5 @@ B2_APPLICATION_KEY_ID={{ B2_APPLICATION_KEY_ID }}
 EOL
 
 # run the deploy script
-/root/.cargo/bin/uv sync
-/root/.cargo/bin/uv run pyinfra @local scripts/configure.py -y
+uv sync
+uv run pyinfra @local scripts/configure.py -y

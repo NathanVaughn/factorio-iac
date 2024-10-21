@@ -1,2 +1,2 @@
-FROM docker.io/factoriotools/factorio:1.1.110
+FROM docker.io/factoriotools/factorio:2.0.8
 # Dockerfile so that renovate can handle automatic updates easier
