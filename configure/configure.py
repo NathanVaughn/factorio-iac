@@ -95,7 +95,7 @@ files.download(
 dpkg_print_architecture = host.get_fact(Command, "dpkg --print-architecture")
 codename = host.get_fact(LinuxDistribution)["release_meta"]["CODENAME"]
 # fmt: off
-apt.repo(
+docker_repo = apt.repo(
     name="Add Docker repository to sources.list.d",
     filename="docker",
     src=f"deb [arch={dpkg_print_architecture} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {codename} stable",
@@ -104,7 +104,8 @@ apt.repo(
 # fmt: on
 
 # Update package lists again after adding the repository
-apt.update(name="Update apt cache (after adding Docker repository)", _sudo=True)
+if docker_repo.changed:
+    apt.update(name="Update apt cache (after adding Docker repository)", _sudo=True)
 
 # Install Docker
 apt.packages(
@@ -149,7 +150,7 @@ files.put(
     _sudo=True,
 )
 
-files.put(
+factorio_service = files.put(
     name="Copy Factorio backup service file",
     src=str(GENERATED_FILES_DIR.joinpath("factorio_backup.service")),
     dest=f"{SYSTEMD_DIR}/factorio_backup.service",
@@ -176,6 +177,8 @@ systemd.service(
     service="factorio_server.service",
     running=True,
     enabled=True,
+    restarted=factorio_service.changed,
+    daemon_reload=factorio_service.changed,
     _sudo=True,
 )
 
