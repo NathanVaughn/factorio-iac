@@ -13,19 +13,19 @@
         },
         {
             "label": "install",
-            "dependsOn": ["install-pkgs", "install-pre-commit"],
+            "dependsOn": [
+                "install-pkgs",
+                "install-pre-commit"
+            ],
             "dependsOrder": "sequence"
         },
         {
             "label": "pre-commit",
             "command": "uv run pre-commit run --all-files",
             "type": "shell",
-            "dependsOn": ["install-pkgs"]
-        },
-        {
-            "label": "deploy",
-            "command": "uv run wrapper.py pulumi update --stack prod",
-            "type": "shell"
+            "dependsOn": [
+                "install-pkgs"
+            ]
         },
         {
             "label": "preview",
@@ -33,12 +33,9 @@
             "type": "shell"
         },
         {
-            "label": "configure",
-            "command": "uv run pyinfra @ssh/factorio.nathanv.app configure.py -y",
-            "type": "shell",
-            "options": {
-                "cwd": "${workspaceFolder}${/}scripts${/}pyinfra"
-            }
-        },
+            "label": "deploy",
+            "command": "uv run oneshot.py",
+            "type": "shell"
+        }
     ]
 }

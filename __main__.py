@@ -1,1 +1,1 @@
-import scripts.deploy  # noqa
+import deploy.main  # noqa

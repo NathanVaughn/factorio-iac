@@ -2,84 +2,24 @@
 This script is meant to be executed by pyinfra to configure the server.
 """
 
-import json
-import os
-import pathlib
 import sys
-import urllib.request
 
-import dotenv
-import jinja2
 from pyinfra.context import host
 from pyinfra.facts.server import Command, LinuxDistribution
 from pyinfra.operations import apt, files, server, systemd
 
-sys.path.append(os.path.join("..", ".."))
+sys.path.append("..")
 
-from scripts.common import ROOT_DIR
+from common import FILES_DIR, GENERATED_FILES_DIR
+from prepare import prepare
 
-# local files
-TEMPLATES_DIR = ROOT_DIR.joinpath("templates")
-FILES_DIR = ROOT_DIR.joinpath("files")
-GENERATED_FILES_DIR = FILES_DIR.joinpath("generated")
-
-# remote files
-DISK_PATH = "/dev/nvme1n1"
-SYSTEMD_DIR = pathlib.Path("/etc/systemd/system/")
-DATA_DIR = "/factorio"
-
-# local config
-CONFIG = dotenv.dotenv_values(ROOT_DIR.joinpath(".env"))
-
-
-def prepare() -> None:
-    # create directories
-    GENERATED_FILES_DIR.mkdir(parents=True, exist_ok=True)
-
-    # create server settings
-    print("Downloading Factorio server settings template")
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/wube/factorio-data/master/server-settings.example.json"
-    ) as response:
-        data = json.loads(response.read().decode())
-
-    # settings we care about
-    data["name"] = "Nathan Vaughn's Factorio Server"
-    data["description"] = "See above"
-    data["visibility"]["public"] = False
-    data["game_password"] = CONFIG["FACTORIO_SERVER_PASSWORD"]
-
-    # remove comment fields
-    data = {k: v for k, v in data.items() if not k.startswith("_comment")}
-
-    # write to file
-    # needs to end up in /factorio/server/config/server-settings.json
-    print("Writing Factorio server settings")
-    with open(GENERATED_FILES_DIR.joinpath("server-settings.json"), "w") as fp:
-        fp.write(json.dumps(data, indent=4))
-
-    # get docker container image
-    with open(FILES_DIR.joinpath("Dockerfile"), "r") as fp:
-        CONFIG["FACTORIO_IMAGE"] = fp.readline().strip().split("FROM ")[1]
-
-    # template files
-    CONFIG["DATA_DIR"] = DATA_DIR
-    for template_file in TEMPLATES_DIR.glob("*.j2"):
-        # read template
-        with open(template_file) as fp:
-            template = jinja2.Template(fp.read())
-
-        print(f"Writing {template_file.stem}")
-
-        # write to file
-        new_filename = GENERATED_FILES_DIR.joinpath(
-            template_file.name.replace(".j2", "")
-        )
-        with open(new_filename, "w") as fp:
-            fp.write(template.render(CONFIG))
-
+from config import FACTORIO_SERVER_DIRECTORY
 
 prepare()
+
+
+DISK_PATH = "/dev/nvme1n1"
+SYSTEMD_DIR = "/etc/systemd/system"
 
 # ==============================================
 # Format and attach disk
@@ -87,25 +27,31 @@ prepare()
 # ==============================================
 
 fs = "xfs"
-print(host.get_fact(Command, f"file -s {DISK_PATH}"))
-already_formatted = "filesystem" in host.get_fact(
-    Command, f"file -s {DISK_PATH}", _sudo=True
-)
+print(host.get_fact(Command, f"sudo file -s {DISK_PATH}"))
+already_formatted = "filesystem" in host.get_fact(Command, f"sudo file -s {DISK_PATH}")
 if not already_formatted:
-    server.shell(name="Format disk", commands=[f"mkfs -t {fs} {DISK_PATH}"])
+    server.shell(name="Format disk", commands=[f"mkfs -t {fs} {DISK_PATH}"], _sudo=True)
 
 files.directory(
     name="Create directory for Factorio data",
-    path=f"{DATA_DIR}/",
+    path=f"{FACTORIO_SERVER_DIRECTORY}/",
+    _sudo=True,
 )
 
 # no trailing slash
-server.mount(name="Mount the disk", path=DATA_DIR, mounted=True, device=DISK_PATH)
+server.mount(
+    name="Mount the disk",
+    path=FACTORIO_SERVER_DIRECTORY,
+    mounted=True,
+    device=DISK_PATH,
+    _sudo=True,
+)
 
 files.line(
     name="Add entry to fstab",
     path="/etc/fstab",
-    line=f"/dev/nvme1n1/ {DATA_DIR} {fs} defaults,nofail 0 2",
+    line=f"/dev/nvme1n1/ {FACTORIO_SERVER_DIRECTORY} {fs} defaults,nofail 0 2",
+    _sudo=True,
 )
 
 # ==============================================
@@ -115,6 +61,7 @@ files.line(
 
 # Update package lists before installing dependencies
 apt.update(name="Update apt cache", _sudo=True)
+apt.upgrade(name="Upgrade packages", auto_remove=True, _sudo=True)
 
 # Install dependencies required for adding the Docker repository
 apt.packages(
@@ -184,7 +131,7 @@ server.user(
 files.put(
     name="Copy Factorio server config",
     src=str(GENERATED_FILES_DIR.joinpath("server-settings.json")),
-    dest=f"{DATA_DIR}/server/config/server-settings.json",
+    dest=f"{FACTORIO_SERVER_DIRECTORY}/server/config/server-settings.json",
     user="factorio",
     create_remote_dir=True,
     _sudo=True,
@@ -198,28 +145,28 @@ files.put(
 files.put(
     name="Copy Factorio server service file",
     src=str(GENERATED_FILES_DIR.joinpath("factorio_server.service")),
-    dest=str(SYSTEMD_DIR.joinpath("factorio_server.service")),
+    dest=f"{SYSTEMD_DIR}/factorio_server.service",
     _sudo=True,
 )
 
 files.put(
     name="Copy Factorio backup service file",
     src=str(GENERATED_FILES_DIR.joinpath("factorio_backup.service")),
-    dest=str(SYSTEMD_DIR.joinpath("factorio_backup.service")),
+    dest=f"{SYSTEMD_DIR}/factorio_backup.service",
     _sudo=True,
 )
 
 files.put(
     name="Copy Factorio backup timer file",
     src=str(FILES_DIR.joinpath("factorio_backup.timer")),
-    dest=str(SYSTEMD_DIR.joinpath("factorio_backup.timer")),
+    dest=f"{SYSTEMD_DIR}/factorio_backup.timer",
     _sudo=True,
 )
 
 files.put(
     name="Copy Factorio backup environment file",
     src=str(GENERATED_FILES_DIR.joinpath("factorio_backup.env")),
-    dest=f"{DATA_DIR}/factorio_backup.env",
+    dest=f"{FACTORIO_SERVER_DIRECTORY}/factorio_backup.env",
     _sudo=True,
 )
 
@@ -229,6 +176,7 @@ systemd.service(
     service="factorio_server.service",
     running=True,
     enabled=True,
+    _sudo=True,
 )
 
 systemd.service(
@@ -236,6 +184,7 @@ systemd.service(
     service="factorio_backup.service",
     enabled=True,
     running=False,
+    _sudo=True,
 )
 
 systemd.service(
@@ -243,4 +192,5 @@ systemd.service(
     service="factorio_backup.timer",
     enabled=True,
     running=False,
+    _sudo=True,
 )

@@ -5,8 +5,8 @@ Wants=factorio_backup.timer
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/docker run --rm -e B2_APPLICATION_KEY -e B2_APPLICATION_KEY_ID -v {{ DATA_DIR }}/:{{ DATA_DIR }}/ cr.nathanv.app/docker.io/backblazeit/b2:latest b2v4 sync --keep-days 30 --replace-newer {{ DATA_DIR }}/ b2://nathanv-private/backups/factorio/
-EnvironmentFile={{ DATA_DIR }}/factorio_backup.env
+ExecStart=/usr/bin/docker run --rm -e B2_APPLICATION_KEY -e B2_APPLICATION_KEY_ID -v {{ FACTORIO_SERVER_DIRECTORY }}/:{{ FACTORIO_SERVER_DIRECTORY }}/ {{ DOCKER_PREFIX }}docker.io/backblazeit/b2:latest b2v4 sync --keep-days 30 --replace-newer {{ FACTORIO_SERVER_DIRECTORY }}/ {{ B2_BUCKET_PATH }}
+EnvironmentFile={{ FACTORIO_SERVER_DIRECTORY }}/factorio_backup.env
 
 [Install]
 WantedBy=default.target
