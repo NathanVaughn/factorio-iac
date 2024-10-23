@@ -22,7 +22,7 @@ subprocess.run(
 )
 
 # delete old ssh key info
-subprocess.run(["ssh-keygen", "-R", FACTORIO_SERVER_HOSTNAME], check=True)
+subprocess.run(["ssh-keygen", "-R", FACTORIO_SERVER_HOSTNAME], check=False)
 
 subprocess.run(
     ["pyinfra", "inventory.py", "configure.py", "-y"],
