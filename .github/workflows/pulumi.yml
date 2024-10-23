@@ -48,6 +48,7 @@ jobs:
         run: echo "${{ secrets.CONFIG_FILE }}" > config.py
 
       - name: Setup SSH key
+        if: github.event_name == 'push'
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
