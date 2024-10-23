@@ -11,12 +11,18 @@ on:
     branches:
       - main
 
+env:
+  # Use the same ssh-agent socket value across all jobs
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
 jobs:
   update:
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
+
+    if: "${{ !contains(github.event.head_commit.message, 'ci skip') }}"
 
     steps:
       - name: Checkout Code
@@ -48,6 +54,7 @@ jobs:
         run: echo "${{ secrets.CONFIG_FILE }}" > config.py
 
       - name: Setup SSH Key
+        if: github.event_name == 'push'
         env:
           SSH_PASSPHRASE: ${{secrets.SSH_PASSPHRASE}}
           SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
