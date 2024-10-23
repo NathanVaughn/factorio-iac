@@ -23,7 +23,7 @@
             "dependsOn": ["install-pkgs"]
         },
         {
-            "label": "update",
+            "label": "deploy",
             "command": "uv run wrapper.py pulumi update --stack prod",
             "type": "shell"
         },
@@ -31,6 +31,14 @@
             "label": "preview",
             "command": "uv run wrapper.py pulumi preview --stack prod",
             "type": "shell"
-        }
+        },
+        {
+            "label": "configure",
+            "command": "uv run pyinfra @ssh/factorio.nathanv.app configure.py -y",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}${/}scripts${/}pyinfra"
+            }
+        },
     ]
 }

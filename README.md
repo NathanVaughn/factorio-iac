@@ -5,13 +5,12 @@ This repository contains the code to deploy and setup my Factorio server.
 ## How It Works
 
 This repo generates files using the inputs in the `.env` file,
-and uses [Pulumi](https://www.pulumi.com/) to run `secripts/deploy.py`
+and uses [Pulumi](https://www.pulumi.com/) to run `scripts/deploy.py`
 to deploy a server to AWS Lightsail. My Cloudflare account is also updated
 with a DNS record to point at the server.
 
-In that deployment, the `user_data` option is used to pass in a script
-that downloads this repository and uses [pyinfra](https://pyinfra.com/) to run
-`scripts/configure.py` to configure and start the server.
+After that deployment, [pyinfra](https://pyinfra.com/) is used to run
+`scripts/pyinfra/configure.py` to configure and start the server.
 
 Backups are setup hourly to a [Backblaze](https://www.backblaze.com/cloud-storage)
 B2 bucket.
@@ -37,5 +36,6 @@ vtr install
 And deploy with:
 
 ```bash
-vtr update
+vtr deploy
+vtr configure
 ```

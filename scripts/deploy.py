@@ -7,14 +7,14 @@ import urllib.request
 import pulumi_aws as aws
 import pulumi_cloudflare as cloudflare
 
-from scripts import prepare
-from scripts.common import CLOUDFLARE_ACCOUNT_ID, GENERATED_FILES_DIR
-
-prepare.main()
+# https://github.com/cloudflare/wrangler-legacy/issues/209#issuecomment-541654484
+CLOUDFLARE_ACCOUNT_ID = "57ac323804932b01e44e546ff34ba9a3"
 
 availability_zone = "us-east-2a"  # Ohio
 blueprint_id = "ubuntu_22_04"
 bundle_id = "micro_3_0"  # $7/month, 1GB, 2 vCPUs, 40GB SSD
+
+url = "factorio.nathanv.app"
 
 # donwload public key
 with urllib.request.urlopen(
@@ -33,11 +33,6 @@ factorio_disk = aws.lightsail.Disk(
     name="factorio_disk",
 )
 
-# read kickstart file
-with open(GENERATED_FILES_DIR.joinpath("kickstart.sh"), "r") as fp:
-    kickstart = fp.read()
-
-
 factorio_vps = aws.lightsail.Instance(
     "factorio_vps",
     name="factorio_server",
@@ -45,7 +40,6 @@ factorio_vps = aws.lightsail.Instance(
     blueprint_id=blueprint_id,
     bundle_id=bundle_id,
     key_pair_name=ssh_key_pair.name,
-    user_data=kickstart,
 )
 
 # https://docs.aws.amazon.com/lightsail/latest/userguide/create-and-attach-additional-block-storage-disks-linux-unix.html
@@ -78,7 +72,9 @@ factorio_vps_public_ports = aws.lightsail.InstancePublicPorts(
             "from_port": 22,
             "to_port": 22,
             "protocol": "tcp",
-            "cidr_list_aliases": ["lightsail-connect"],
+            # allow all IPs to ssh into the server
+            "cidrs": ["0.0.0.0/0"],
+            "ipv6_cidrs": ["::/0"],
         },
     ],
 )
@@ -92,7 +88,7 @@ zone = cloudflare.Zone(
 )
 cloudflare.Record(
     "nathanv.app-record-factorio",
-    name="factorio.nathanv.app",
+    name=url,
     type="A",
     content=factorio_vps.public_ip_address,
     proxied=False,
