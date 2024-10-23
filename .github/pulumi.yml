@@ -1,0 +1,59 @@
+name: Pulumi
+
+on:
+  push:
+    branches:
+      - main
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - main
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+
+      - name: Install vscode-task-runner
+        run: uv tool install vscode-task-runner
+
+      - name: Get Pulumi Version
+        id: pulumi_version
+        run: echo "pulumi_version=$(python scripts/get_pulumi_version.py)" >> "$GITHUB_OUTPUT"
+
+      - name: Install Pulumi
+        uses: pulumi/actions@v6
+        with:
+          pulumi-version: ${{ steps.pulumi_version.outputs.pulumi_version }}
+
+      - name: Setup secrets
+        run: echo "${{ secrets.ENVIRONMENT_FILE }}" > .env
+
+      - name: Install dependencies
+        run: vtr install
+
+      - name: Pulumi Preview
+        if: contains(github.event_name, 'pull_request')
+        run: vtr preview --expect-no-changes
+
+      - name: Pulumi Update
+        if: github.event_name == 'push'
+        run: vtr update --yes
