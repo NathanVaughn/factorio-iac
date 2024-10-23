@@ -4,7 +4,7 @@
     "packageRules": [
         {
             "matchCategories": ["docker"],
-            "extends": ["before 11pm"]
+            "schedule": ["before 11pm"]
         }
     ]
 }
