@@ -30,7 +30,8 @@
         {
             "label": "preview",
             "command": "uv run wrapper.py pulumi preview --stack prod",
-            "type": "shell"
+            "type": "shell",
+            "options": {"cwd": "${workspaceFolder}${/}deploy"}
         },
         {
             "label": "deploy",

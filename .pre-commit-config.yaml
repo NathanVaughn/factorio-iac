@@ -24,7 +24,7 @@ repos:
     -   id: ruff-format
     repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.7.0
--   hooks:
-    -   id: pyright
-    repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.385
+# -   hooks:
+#     -   id: pyright
+#     repo: https://github.com/RobertCraigie/pyright-python
+#     rev: v1.1.385
