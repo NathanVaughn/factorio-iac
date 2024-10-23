@@ -52,7 +52,7 @@ jobs:
           pulumi-version: ${{ steps.pulumi_version.outputs.pulumi_version }}
 
       - name: Setup secrets
-        run: echo "${{ secrets.CONFIG_FILE }}" > config.py
+        run: echo '${{ secrets.CONFIG_FILE }}'' > config.py
 
       - name: Setup SSH Key
         if: github.event_name == 'push'
