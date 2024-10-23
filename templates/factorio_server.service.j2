@@ -1,21 +1,21 @@
 # https://www.jetbrains.com/help/youtrack/server/run-docker-container-as-service.html
 [Unit]
-Description=Factorio Server Service
+Description=Factorio Server
 After=docker.service
 Requires=docker.service
 
 [Service]
 TimeoutStartSec=0
 Restart=always
-# -= tolerates failure
+# =- tolerates failure
 # %n is the name of the service
 ExecStartPre=-/usr/bin/docker container rm %n
-ExecStartPre=/usr/bin/docker pull cr.nathanv.app/{{ FACTORIO_IMAGE }}
+ExecStartPre=/usr/bin/docker pull {{ DOCKER_PREFIX }}{{ FACTORIO_DOCKER_IMAGE }}
 ExecStart=/usr/bin/docker run --rm --name %n \
--v /factorio/server/:/factorio/ \
+-v {{ FACTORIO_SERVER_DIRECTORY }}/server/:/factorio/ \
 -p 34197:34197/udp \
 -p 27015:27015/tcp \
-cr.nathanv.app/{{ FACTORIO_IMAGE }}
+{{ DOCKER_PREFIX }}{{ FACTORIO_DOCKER_IMAGE }}
 ExecStop=/usr/bin/docker container stop %n
 
 [Install]

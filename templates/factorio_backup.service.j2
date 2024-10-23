@@ -1,0 +1,12 @@
+# https://opensource.com/article/20/7/systemd-timers
+[Unit]
+Description=Factorio Backup
+Wants=factorio_backup.timer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker run --rm -e B2_APPLICATION_KEY -e B2_APPLICATION_KEY_ID -v {{ FACTORIO_SERVER_DIRECTORY }}/:{{ FACTORIO_SERVER_DIRECTORY }}/ {{ DOCKER_PREFIX }}docker.io/backblazeit/b2:latest b2v4 sync --keep-days 30 --replace-newer {{ FACTORIO_SERVER_DIRECTORY }}/ {{ B2_BUCKET_PATH }}
+EnvironmentFile={{ FACTORIO_SERVER_DIRECTORY }}/factorio_backup.env
+
+[Install]
+WantedBy=default.target

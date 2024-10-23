@@ -1,5 +1,8 @@
+import pathlib
+
 import tomllib
-from common import ROOT_DIR
+
+ROOT_DIR = pathlib.Path(__file__).parent.parent
 
 with open(ROOT_DIR.joinpath("uv.lock"), "rb") as fp:
     data = tomllib.load(fp)

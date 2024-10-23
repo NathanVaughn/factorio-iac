@@ -1,20 +1,20 @@
-"""
-This script is meant to generate some files before the server is configured by pyinfra.
-"""
-
 import json
-import subprocess
 import urllib.request
 
-import dotenv
 import jinja2
+from common import FILES_DIR, GENERATED_FILES_DIR, TEMPLATES_DIR
 
-from scripts.common import FILES_DIR, GENERATED_FILES_DIR, ROOT_DIR, TEMPLATES_DIR
+from config import (
+    B2_APPLICATION_KEY,
+    B2_APPLICATION_KEY_ID,
+    B2_BUCKET_PATH,
+    DOCKER_PREFIX,
+    FACTORIO_SERVER_DIRECTORY,
+    FACTORIO_SERVER_PASSWORD,
+)
 
-CONFIG = dotenv.dotenv_values(ROOT_DIR.joinpath(".env"))
 
-
-def main() -> None:
+def prepare() -> None:
     # create directories
     GENERATED_FILES_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -29,7 +29,7 @@ def main() -> None:
     data["name"] = "Nathan Vaughn's Factorio Server"
     data["description"] = "See above"
     data["visibility"]["public"] = False
-    data["game_password"] = CONFIG["FACTORIO_SERVER_PASSWORD"]
+    data["game_password"] = FACTORIO_SERVER_PASSWORD
 
     # remove comment fields
     data = {k: v for k, v in data.items() if not k.startswith("_comment")}
@@ -42,11 +42,16 @@ def main() -> None:
 
     # get docker container image
     with open(FILES_DIR.joinpath("Dockerfile"), "r") as fp:
-        CONFIG["FACTORIO_IMAGE"] = fp.readline().strip().split("FROM ")[1]
+        factorio_docker_image = fp.readline().strip().split("FROM ")[1]
 
-    CONFIG["GIT_HASH"] = (
-        subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
-    )
+    config_dict = {
+        "FACTORIO_DOCKER_IMAGE": factorio_docker_image,
+        "FACTORIO_SERVER_DIRECTORY": FACTORIO_SERVER_DIRECTORY,
+        "DOCKER_PREFIX": DOCKER_PREFIX,
+        "B2_BUCKET_PATH": B2_BUCKET_PATH,
+        "B2_APPLICATION_KEY_ID": B2_APPLICATION_KEY_ID,
+        "B2_APPLICATION_KEY": B2_APPLICATION_KEY,
+    }
 
     # template files
     for template_file in TEMPLATES_DIR.glob("*.j2"):
@@ -61,8 +66,4 @@ def main() -> None:
             template_file.name.replace(".j2", "")
         )
         with open(new_filename, "w") as fp:
-            fp.write(template.render(CONFIG))
-
-
-if __name__ == "__main__":
-    main()
+            fp.write(template.render(config_dict))

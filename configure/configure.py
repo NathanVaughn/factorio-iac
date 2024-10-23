@@ -2,18 +2,24 @@
 This script is meant to be executed by pyinfra to configure the server.
 """
 
-import pathlib
+import sys
 
 from pyinfra.context import host
 from pyinfra.facts.server import Command, LinuxDistribution
 from pyinfra.operations import apt, files, server, systemd
 
-from scripts import prepare
-from scripts.common import DISK_PATH, FILES_DIR, GENERATED_FILES_DIR
+sys.path.append("..")
 
-SYSTEMD_DIR = pathlib.Path("/etc/systemd/system/")
+from common import FILES_DIR, GENERATED_FILES_DIR
+from prepare import prepare
 
-prepare.main()
+from config import FACTORIO_SERVER_DIRECTORY
+
+prepare()
+
+
+DISK_PATH = "/dev/nvme1n1"
+SYSTEMD_DIR = "/etc/systemd/system"
 
 # ==============================================
 # Format and attach disk
@@ -21,22 +27,31 @@ prepare.main()
 # ==============================================
 
 fs = "xfs"
-already_formatted = "filesystem" in host.get_fact(Command, f"file -s {DISK_PATH}")
+print(host.get_fact(Command, f"sudo file -s {DISK_PATH}"))
+already_formatted = "filesystem" in host.get_fact(Command, f"sudo file -s {DISK_PATH}")
 if not already_formatted:
-    server.shell(name="Format disk", commands=[f"mkfs -t {fs} {DISK_PATH}"])
+    server.shell(name="Format disk", commands=[f"mkfs -t {fs} {DISK_PATH}"], _sudo=True)
 
 files.directory(
     name="Create directory for Factorio data",
-    path="/factorio/",
+    path=f"{FACTORIO_SERVER_DIRECTORY}/",
+    _sudo=True,
 )
 
 # no trailing slash
-server.mount(name="Mount the disk", path="/factorio", mounted=True, device=DISK_PATH)
+server.mount(
+    name="Mount the disk",
+    path=FACTORIO_SERVER_DIRECTORY,
+    mounted=True,
+    device=DISK_PATH,
+    _sudo=True,
+)
 
 files.line(
     name="Add entry to fstab",
     path="/etc/fstab",
-    line=f"/dev/nvme1n1/ /factorio {fs} defaults,nofail 0 2",
+    line=f"/dev/nvme1n1/ {FACTORIO_SERVER_DIRECTORY} {fs} defaults,nofail 0 2",
+    _sudo=True,
 )
 
 # ==============================================
@@ -45,12 +60,14 @@ files.line(
 # ==============================================
 
 # Update package lists before installing dependencies
-apt.update(name="Update apt cache")
+apt.update(name="Update apt cache", _sudo=True)
+apt.upgrade(name="Upgrade packages", auto_remove=True, _sudo=True)
 
 # Install dependencies required for adding the Docker repository
 apt.packages(
     name="Install ca-certificates and curl",
     packages=["ca-certificates", "curl"],
+    _sudo=True,
 )
 
 # Create the directory for the Docker GPG key
@@ -60,6 +77,7 @@ files.directory(
     mode="755",
     user="root",
     group="root",
+    _sudo=True,
 )
 
 # Download the Docker GPG key
@@ -70,6 +88,7 @@ files.download(
     mode="444",
     user="root",
     group="root",
+    _sudo=True,
 )
 
 # Add the Docker repository to sources.list
@@ -80,16 +99,18 @@ apt.repo(
     name="Add Docker repository to sources.list.d",
     filename="docker",
     src=f"deb [arch={dpkg_print_architecture} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {codename} stable",
+    _sudo=True
 )
 # fmt: on
 
 # Update package lists again after adding the repository
-apt.update(name="Update apt cache (after adding Docker repository)")
+apt.update(name="Update apt cache (after adding Docker repository)", _sudo=True)
 
 # Install Docker
 apt.packages(
     name="Install Docker",
     packages=["docker-ce", "docker-ce-cli", "containerd.io"],
+    _sudo=True,
 )
 
 
@@ -104,14 +125,16 @@ server.user(
     uid=845,
     ensure_home=False,
     create_home=False,
+    _sudo=True,
 )
 
 files.put(
     name="Copy Factorio server config",
     src=str(GENERATED_FILES_DIR.joinpath("server-settings.json")),
-    dest="/factorio/server/config/server-settings.json",
+    dest=f"{FACTORIO_SERVER_DIRECTORY}/server/config/server-settings.json",
     user="factorio",
     create_remote_dir=True,
+    _sudo=True,
 )
 
 # ==============================================
@@ -122,25 +145,29 @@ files.put(
 files.put(
     name="Copy Factorio server service file",
     src=str(GENERATED_FILES_DIR.joinpath("factorio_server.service")),
-    dest=str(SYSTEMD_DIR.joinpath("factorio_server.service")),
+    dest=f"{SYSTEMD_DIR}/factorio_server.service",
+    _sudo=True,
 )
 
 files.put(
     name="Copy Factorio backup service file",
-    src=str(FILES_DIR.joinpath("factorio_backup.service")),
-    dest=str(SYSTEMD_DIR.joinpath("factorio_backup.service")),
+    src=str(GENERATED_FILES_DIR.joinpath("factorio_backup.service")),
+    dest=f"{SYSTEMD_DIR}/factorio_backup.service",
+    _sudo=True,
 )
 
 files.put(
     name="Copy Factorio backup timer file",
     src=str(FILES_DIR.joinpath("factorio_backup.timer")),
-    dest=str(SYSTEMD_DIR.joinpath("factorio_backup.timer")),
+    dest=f"{SYSTEMD_DIR}/factorio_backup.timer",
+    _sudo=True,
 )
 
 files.put(
     name="Copy Factorio backup environment file",
     src=str(GENERATED_FILES_DIR.joinpath("factorio_backup.env")),
-    dest="/factorio/factorio_backup.env",
+    dest=f"{FACTORIO_SERVER_DIRECTORY}/factorio_backup.env",
+    _sudo=True,
 )
 
 # start services
@@ -149,6 +176,7 @@ systemd.service(
     service="factorio_server.service",
     running=True,
     enabled=True,
+    _sudo=True,
 )
 
 systemd.service(
@@ -156,6 +184,7 @@ systemd.service(
     service="factorio_backup.service",
     enabled=True,
     running=False,
+    _sudo=True,
 )
 
 systemd.service(
@@ -163,4 +192,5 @@ systemd.service(
     service="factorio_backup.timer",
     enabled=True,
     running=False,
+    _sudo=True,
 )

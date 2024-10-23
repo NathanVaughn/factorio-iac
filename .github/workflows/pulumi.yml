@@ -45,7 +45,13 @@ jobs:
           pulumi-version: ${{ steps.pulumi_version.outputs.pulumi_version }}
 
       - name: Setup secrets
-        run: echo "${{ secrets.ENVIRONMENT_FILE }}" > .env
+        run: echo "${{ secrets.CONFIG_FILE }}" > config.py
+
+      - name: Setup SSH key
+        if: github.event_name == 'push'
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Install dependencies
         run: vtr install
@@ -56,4 +62,4 @@ jobs:
 
       - name: Pulumi Update
         if: github.event_name == 'push'
-        run: vtr update --yes
+        run: vtr deploy

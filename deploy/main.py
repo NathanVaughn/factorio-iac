@@ -2,24 +2,26 @@
 This script is meant to deploy the VM in the cloud.
 """
 
+import sys
 import urllib.request
 
 import pulumi_aws as aws
 import pulumi_cloudflare as cloudflare
 
-from scripts import prepare
-from scripts.common import CLOUDFLARE_ACCOUNT_ID, GENERATED_FILES_DIR
+sys.path.append("..")
 
-prepare.main()
-
-availability_zone = "us-east-2a"  # Ohio
-blueprint_id = "ubuntu_22_04"
-bundle_id = "micro_3_0"  # $7/month, 1GB, 2 vCPUs, 40GB SSD
+from config import (
+    AWS_AVAILABILITY_ZONE,
+    AWS_LIGHTSAIL_BLUEPRINT_ID,
+    AWS_LIGHTSAIL_BUNDLE_ID,
+    CLOUDFLARE_ACCOUNT_ID,
+    CLOUDFLARE_ZONE,
+    FACTORIO_SERVER_HOSTNAME,
+    SSH_PUBLIC_KEY_URL,
+)
 
 # donwload public key
-with urllib.request.urlopen(
-    "https://raw.githubusercontent.com/NathanVaughn/public-keys/main/ssh.pub"
-) as response:
+with urllib.request.urlopen(SSH_PUBLIC_KEY_URL) as response:
     public_key = response.read().decode()
 
 ssh_key_pair = aws.lightsail.KeyPair(
@@ -28,24 +30,18 @@ ssh_key_pair = aws.lightsail.KeyPair(
 
 factorio_disk = aws.lightsail.Disk(
     "factorio_disk",
-    availability_zone=availability_zone,
+    availability_zone=AWS_AVAILABILITY_ZONE,
     size_in_gb=8,  # minimum is 8gb
     name="factorio_disk",
 )
 
-# read kickstart file
-with open(GENERATED_FILES_DIR.joinpath("kickstart.sh"), "r") as fp:
-    kickstart = fp.read()
-
-
 factorio_vps = aws.lightsail.Instance(
     "factorio_vps",
     name="factorio_server",
-    availability_zone=availability_zone,
-    blueprint_id=blueprint_id,
-    bundle_id=bundle_id,
+    availability_zone=AWS_AVAILABILITY_ZONE,
+    blueprint_id=AWS_LIGHTSAIL_BLUEPRINT_ID,
+    bundle_id=AWS_LIGHTSAIL_BUNDLE_ID,
     key_pair_name=ssh_key_pair.name,
-    user_data=kickstart,
 )
 
 # https://docs.aws.amazon.com/lightsail/latest/userguide/create-and-attach-additional-block-storage-disks-linux-unix.html
@@ -78,21 +74,23 @@ factorio_vps_public_ports = aws.lightsail.InstancePublicPorts(
             "from_port": 22,
             "to_port": 22,
             "protocol": "tcp",
-            "cidr_list_aliases": ["lightsail-connect"],
+            # allow all IPs to ssh into the server
+            "cidrs": ["0.0.0.0/0"],
+            "ipv6_cidrs": ["::/0"],
         },
     ],
 )
 
 # add cloudflare record
 zone = cloudflare.Zone(
-    "nathanv.app-zone",
-    zone="nathanv.app",
+    "cf-zone",
+    zone=CLOUDFLARE_ZONE,
     plan="free",
     account_id=CLOUDFLARE_ACCOUNT_ID,
 )
 cloudflare.Record(
-    "nathanv.app-record-factorio",
-    name="factorio.nathanv.app",
+    "cf-record-factorio",
+    name=FACTORIO_SERVER_HOSTNAME,
     type="A",
     content=factorio_vps.public_ip_address,
     proxied=False,
