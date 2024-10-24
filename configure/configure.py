@@ -143,14 +143,14 @@ files.put(
 # ==============================================
 
 # copy files
-files.put(
+factorio_service = files.put(
     name="Copy Factorio server service file",
     src=str(GENERATED_FILES_DIR.joinpath("factorio_server.service")),
     dest=f"{SYSTEMD_DIR}/factorio_server.service",
     _sudo=True,
 )
 
-factorio_service = files.put(
+files.put(
     name="Copy Factorio backup service file",
     src=str(GENERATED_FILES_DIR.joinpath("factorio_backup.service")),
     dest=f"{SYSTEMD_DIR}/factorio_backup.service",
