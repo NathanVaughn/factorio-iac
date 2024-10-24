@@ -3,6 +3,7 @@
 Description=Factorio Server
 After=docker.service
 Requires=docker.service
+RequiresMountsFor={{ FACTORIO_SERVER_DIRECTORY }}
 
 [Service]
 TimeoutStartSec=0
