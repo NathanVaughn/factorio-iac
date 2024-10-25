@@ -172,16 +172,19 @@ files.put(
 )
 
 # start services
+# since the game server should always be running,
+# restart and reload if there are any changes
 systemd.service(
     name="Start Factorio server service",
     service="factorio_server.service",
     enabled=True,
     running=True,
-    restarted=server_service.changed,
     daemon_reload=server_service.changed,
+    restarted=server_service.changed,
     _sudo=True,
 )
 
+# just needs to enabled, not actively running
 systemd.service(
     name="Start Factorio backup service",
     service="factorio_backup.service",
@@ -190,11 +193,13 @@ systemd.service(
     _sudo=True,
 )
 
+# the timer also needs to be running at all times, which is waiting
 systemd.service(
     name="Start Factorio backup timer",
     service="factorio_backup.timer",
     enabled=True,
     running=True,
     daemon_reload=backup_timer.changed,
+    restarted=backup_timer.changed,
     _sudo=True,
 )
