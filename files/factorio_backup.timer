@@ -4,8 +4,8 @@ Description=Factorio Backup Timer
 Requires=factorio_backup.service
 
 [Timer]
-Unit=myMonitor.service
-OnCalendar=*-*-* *:00:00
+OnCalendar=hourly
+Persistent=true
 
 [Install]
 WantedBy=timers.target
