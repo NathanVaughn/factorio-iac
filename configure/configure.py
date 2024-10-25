@@ -50,7 +50,7 @@ server.mount(
 files.line(
     name="Add entry to fstab",
     path="/etc/fstab",
-    line=f"/dev/nvme1n1/ {FACTORIO_SERVER_DIRECTORY} {fs} defaults,nofail 0 2",
+    line=f"{DISK_PATH} {FACTORIO_SERVER_DIRECTORY} {fs} defaults,nofail 0 2",
     _sudo=True,
 )
 
@@ -143,21 +143,21 @@ files.put(
 # ==============================================
 
 # copy files
-factorio_service = files.put(
+server_service = files.put(
     name="Copy Factorio server service file",
     src=str(GENERATED_FILES_DIR.joinpath("factorio_server.service")),
     dest=f"{SYSTEMD_DIR}/factorio_server.service",
     _sudo=True,
 )
 
-files.put(
+backup_service = files.put(
     name="Copy Factorio backup service file",
     src=str(GENERATED_FILES_DIR.joinpath("factorio_backup.service")),
     dest=f"{SYSTEMD_DIR}/factorio_backup.service",
     _sudo=True,
 )
 
-files.put(
+backup_timer = files.put(
     name="Copy Factorio backup timer file",
     src=str(FILES_DIR.joinpath("factorio_backup.timer")),
     dest=f"{SYSTEMD_DIR}/factorio_backup.timer",
@@ -175,10 +175,10 @@ files.put(
 systemd.service(
     name="Start Factorio server service",
     service="factorio_server.service",
-    running=True,
     enabled=True,
-    restarted=factorio_service.changed,
-    daemon_reload=factorio_service.changed,
+    running=True,
+    restarted=server_service.changed,
+    daemon_reload=server_service.changed,
     _sudo=True,
 )
 
@@ -186,7 +186,7 @@ systemd.service(
     name="Start Factorio backup service",
     service="factorio_backup.service",
     enabled=True,
-    running=False,
+    daemon_reload=backup_service.changed,
     _sudo=True,
 )
 
@@ -194,6 +194,7 @@ systemd.service(
     name="Start Factorio backup timer",
     service="factorio_backup.timer",
     enabled=True,
-    running=False,
+    running=True,
+    daemon_reload=backup_timer.changed,
     _sudo=True,
 )
