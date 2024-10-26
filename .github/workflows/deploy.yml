@@ -1,4 +1,4 @@
-name: Pulumi
+name: Deploy
 
 on:
   workflow_dispatch:
@@ -68,13 +68,13 @@ jobs:
           echo 'echo $SSH_PASSPHRASE' > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: vtr install
 
-      - name: Pulumi Preview
+      - name: Preview
         if: contains(github.event_name, 'pull_request')
         run: vtr preview --expect-no-changes
 
-      - name: Pulumi Update
+      - name: Deploy
         if: github.event_name == 'push'
         run: vtr deploy

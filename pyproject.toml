@@ -15,9 +15,11 @@
         "pip>=24.2",                 # needed for pulumi compatibility
     ]
 
+[dependency-groups]
+    dev = ["pre-commit>=3.2.0"]
+
 [tool.uv]
-    dev-dependencies = ["pre-commit>=3.2.0", "pre-commit-uv>=3.8.0"]
-    package          = false
+    package = false
 
 [tool.pyright]
     typeCheckingMode           = "basic"

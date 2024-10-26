@@ -21,7 +21,8 @@ subprocess.run(
     check=True,
 )
 
-# delete old ssh key info
+# delete old ssh key info. Needed in case the server is redeployed
+# don't check the return code because the key might not exist
 subprocess.run(["ssh-keygen", "-R", FACTORIO_SERVER_HOSTNAME], check=False)
 
 subprocess.run(
