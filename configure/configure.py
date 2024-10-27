@@ -189,6 +189,7 @@ systemd.service(
     name="Start Factorio backup service",
     service="factorio_backup.service",
     enabled=True,
+    running=False,
     daemon_reload=backup_service.changed,
     _sudo=True,
 )
