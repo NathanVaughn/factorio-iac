@@ -89,10 +89,18 @@ zone = cloudflare.Zone(
     account_id=CLOUDFLARE_ACCOUNT_ID,
 )
 cloudflare.Record(
-    "cf-record-factorio",
+    "cf-record-factorio-ipv4",
     name=FACTORIO_SERVER_HOSTNAME,
     type="A",
     content=factorio_vps.public_ip_address,
+    proxied=False,
+    zone_id=zone.id,
+)
+cloudflare.Record(
+    "cf-record-factorio-ipv6",
+    name=FACTORIO_SERVER_HOSTNAME,
+    type="AAAA",
+    content=factorio_vps.ipv6_addresses[0],
     proxied=False,
     zone_id=zone.id,
 )

@@ -203,3 +203,9 @@ systemd.service(
     restarted=backup_timer.changed,
     _sudo=True,
 )
+
+# cleanup
+server.shell(
+    name="Prune Docker images",
+    commands=["sudo docker image prune --all -f"],
+)
