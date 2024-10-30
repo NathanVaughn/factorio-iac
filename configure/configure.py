@@ -3,6 +3,7 @@ This script is meant to be executed by pyinfra to configure the server.
 """
 
 import sys
+import urllib.request
 
 from pyinfra.context import host
 from pyinfra.facts.server import Command, LinuxDistribution
@@ -13,7 +14,11 @@ sys.path.append("..")
 from common import FILES_DIR, GENERATED_FILES_DIR
 from prepare import prepare
 
-from config import FACTORIO_SERVER_DIRECTORY
+from config import (
+    FACTORIO_SERVER_DIRECTORY,
+    FACTORIO_SERVER_HOSTNAME,
+    NETDATA_CLAIM_TOKEN,
+)
 
 prepare()
 
@@ -53,6 +58,39 @@ files.line(
     line=f"{DISK_PATH} {FACTORIO_SERVER_DIRECTORY} {fs} defaults,nofail 0 2",
     _sudo=True,
 )
+
+server.hostname(name="Set the hostname", hostname=FACTORIO_SERVER_HOSTNAME, _sudo=True)
+
+# ==============================================
+# Install Netdata
+# https://learn.netdata.cloud/docs/netdata-agent/installation/linux
+# ==============================================
+
+if NETDATA_CLAIM_TOKEN:
+    kickstart_file = GENERATED_FILES_DIR.joinpath("netdata_kickstart.sh")
+    req = urllib.request.Request(
+        "https://get.netdata.cloud/kickstart.sh",
+        # default user agent is blocked, pretend to be a browser
+        headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+        },
+    )
+
+    with urllib.request.urlopen(req) as response:
+        with open(kickstart_file, "wb") as fp:
+            fp.write(response.read())
+
+    server.script(
+        name="Install/Update Netdata",
+        src=str(kickstart_file.absolute()),
+        args=[
+            "--stable-channel",
+            "--disable-telemetry",
+            "--claim-token",
+            NETDATA_CLAIM_TOKEN,
+        ],
+        _sudo=True,
+    )
 
 # ==============================================
 # Install Docker

@@ -20,6 +20,8 @@ FACTORIO_SERVER_PASSWORD = ""
 FACTORIO_SERVER_DIRECTORY = "/factorio"
 FACTORIO_SERVER_HOSTNAME = "factorio.nathanv.app"
 
+NETDATA_CLAIM_TOKEN = ""
+
 SSH_PUBLIC_KEY_URL = (
     "https://raw.githubusercontent.com/NathanVaughn/public-keys/main/ssh.pub"
 )
