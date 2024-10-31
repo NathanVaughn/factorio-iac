@@ -62,6 +62,24 @@ files.line(
 server.hostname(name="Set the hostname", hostname=FACTORIO_SERVER_HOSTNAME, _sudo=True)
 
 # ==============================================
+# Updates
+
+apt.update(name="Update apt cache", _sudo=True)
+apt.upgrade(name="Upgrade packages", auto_remove=True, _sudo=True)
+
+# ==============================================
+
+
+# ==============================================
+# Install Fail2ban
+
+apt.packages(
+    name="Install fail2ban",
+    packages=["fail2ban"],
+    _sudo=True,
+)
+
+# ==============================================
 # Install Netdata
 # https://learn.netdata.cloud/docs/netdata-agent/installation/linux
 # ==============================================
@@ -96,10 +114,6 @@ if NETDATA_CLAIM_TOKEN:
 # Install Docker
 # https://docs.docker.com/engine/install/ubuntu/
 # ==============================================
-
-# Update package lists before installing dependencies
-apt.update(name="Update apt cache", _sudo=True)
-apt.upgrade(name="Upgrade packages", auto_remove=True, _sudo=True)
 
 # Install dependencies required for adding the Docker repository
 apt.packages(
