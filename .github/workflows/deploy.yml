@@ -20,6 +20,9 @@ jobs:
   update:
     runs-on: ubuntu-latest
 
+    concurrency:
+      group: deploy
+
     permissions:
       contents: read
 
