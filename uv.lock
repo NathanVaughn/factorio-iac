@@ -255,7 +255,7 @@ dependencies = [
     { name = "pyinfra" },
 ]
 
-[package.dependency-groups]
+[package.dev-dependencies]
 dev = [
     { name = "pre-commit" },
 ]
@@ -264,13 +264,13 @@ dev = [
 requires-dist = [
     { name = "jinja2", specifier = "==3.1.4" },
     { name = "pip", specifier = ">=24.2" },
-    { name = "pulumi", specifier = "==3.137.0" },
-    { name = "pulumi-aws", specifier = "==6.57.0" },
-    { name = "pulumi-cloudflare", specifier = "==5.42.0" },
+    { name = "pulumi", specifier = "==3.142.0" },
+    { name = "pulumi-aws", specifier = "==6.61.0" },
+    { name = "pulumi-cloudflare", specifier = "==5.43.1" },
     { name = "pyinfra", specifier = "==3.1.1" },
 ]
 
-[package.metadata.dependency-groups]
+[package.metadata.requires-dev]
 dev = [{ name = "pre-commit", specifier = ">=3.2.0" }]
 
 [[package]]
@@ -534,7 +534,7 @@ wheels = [
 
 [[package]]
 name = "pulumi"
-version = "3.137.0"
+version = "3.142.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "debugpy" },
@@ -546,35 +546,35 @@ dependencies = [
     { name = "six" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/36/ef/a35dd093eee15a0c238ebd83962ad60f1ded8fc690e78cbbbc8ae488e720/pulumi-3.137.0-py3-none-any.whl", hash = "sha256:d6f170f5fba3d55fb6bc021f1f397310972551ffd21b75f65a92fa6dcf49740b", size = 279208 },
+    { url = "https://files.pythonhosted.org/packages/be/d5/bcce0ab79d44b2d8bab6b03d1e7c6fe61f93910109eb08f66646e2d5ed61/pulumi-3.142.0-py3-none-any.whl", hash = "sha256:659a58a26aa36f585046750f01c3f20113c71fa065ee5a4487c775a9ef98b9b2", size = 291446 },
 ]
 
 [[package]]
 name = "pulumi-aws"
-version = "6.57.0"
+version = "6.61.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "parver" },
     { name = "pulumi" },
     { name = "semver" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/94/3d/0b9df9706e67b765840e6fd16746fbfcd0192a0343293f56565b28e730ae/pulumi_aws-6.57.0.tar.gz", hash = "sha256:bf389f35647fa4110de580fdfba0442d3432c65ab4009a5b1c4ad241903fcf65", size = 7220201 }
+sdist = { url = "https://files.pythonhosted.org/packages/0c/bd/beb599918d5f61547ea16ef4dbdd9e9e8ecc0af1c0e1ed414b90b829f9ac/pulumi_aws-6.61.0.tar.gz", hash = "sha256:7907416bbb3fb70afe042b17f053f593db77d517538ec2110cca7f0d1cb36126", size = 7251434 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5c/15/337dd709e7dea92a92881a81d6643d46aff3f0c7eca4cd6b899bb6f1a91b/pulumi_aws-6.57.0-py3-none-any.whl", hash = "sha256:5d4eb464c90fa2b2cbba52dae5f98e7070f401598955269e0861c3590847371c", size = 9864019 },
+    { url = "https://files.pythonhosted.org/packages/df/a8/5a092f6d3f2562083e0d39abba11f148ca7801a8d10e43a0e2c54ee92955/pulumi_aws-6.61.0-py3-none-any.whl", hash = "sha256:749d73f42e5d0ca0be4d0cbfbc50ba85e5397bee096391785015a4c3e85c15cb", size = 9902237 },
 ]
 
 [[package]]
 name = "pulumi-cloudflare"
-version = "5.42.0"
+version = "5.43.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "parver" },
     { name = "pulumi" },
     { name = "semver" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2e/04/dd79c980d9a43a08fb259c156470dbefc49ba910b9e2fadff40853268600/pulumi_cloudflare-5.42.0.tar.gz", hash = "sha256:432103316073cc1924f1c14dd85d823683ea779a63f5e3fb78e9d41a55fb746e", size = 583851 }
+sdist = { url = "https://files.pythonhosted.org/packages/ac/51/cff39b61bb81e00516056b5e21075418ef669cb522620403d14357b100a1/pulumi_cloudflare-5.43.1.tar.gz", hash = "sha256:d37acf5f68a01baa2b7a34d79c237eec96f77b832e916af4c728f6baa6912140", size = 584107 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/68/56/f82524448b949aedd570d33cabc67c9f3486ace8c4a4317774805d33a76d/pulumi_cloudflare-5.42.0-py3-none-any.whl", hash = "sha256:e8c7bda2cb327fd1f6984b4315baa610bb3ea82e1c1aa9131e86f6f88a1b953c", size = 840914 },
+    { url = "https://files.pythonhosted.org/packages/72/ce/a253fb11c1e9530fd7bd992f693b4374795c3be7da5f6b77562a79bc12b7/pulumi_cloudflare-5.43.1-py3-none-any.whl", hash = "sha256:8dadb3a8406cd74d9ec7e621becc635af715f95693499481f6762338cc3db7c3", size = 841186 },
 ]
 
 [[package]]
