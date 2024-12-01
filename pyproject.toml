@@ -9,9 +9,9 @@
     dependencies = [
         "jinja2==3.1.4",
         "pyinfra==3.1.1",
-        "pulumi==3.137.0",
-        "pulumi-aws==6.57.0",
-        "pulumi-cloudflare==5.42.0",
+        "pulumi==3.142.0",
+        "pulumi-aws==6.61.0",
+        "pulumi-cloudflare==5.43.1",
         "pip>=24.2",                 # needed for pulumi compatibility
     ]
 
