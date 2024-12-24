@@ -7,7 +7,7 @@
     authors = [{ name = "Nathan Vaughn", email = "nath@nvaughn.email" }]
     requires-python = ">=3.12"
     dependencies = [
-        "jinja2==3.1.4",
+        "jinja2==3.1.5",
         "pyinfra==3.1.1",
         "pulumi==3.142.0",
         "pulumi-aws==6.61.0",
